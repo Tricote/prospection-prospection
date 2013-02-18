@@ -238,6 +238,11 @@ function getLinks() {
     return results;
 }
 
+function getPagePro() {
+    var siret = document.querySelectorAll('.results_data div')[1].innerText.replace(/\D/g,'');
+    return siret;
+}
+
 casper.start();
 
 var departments = new Array(51, 55, 59, 60, 62, 80);
@@ -273,10 +278,13 @@ casper.label( "LOOP_DEPARTEMENT" );
     casper.thenEvaluate(function(term, where) {
         document.querySelector('input[name="quoiqui"]').setAttribute('value', term);
         document.querySelector('input[name="ou"]').setAttribute('value', where);
-//      document.querySelector('input[name="idLieu"]').setAttribute('value', "C" + where);
+  //          document.querySelector('input[name="idLieu"]').setAttribute('value', "C" + where);
         document.querySelector('input[name="portail"]').setAttribute('value', 'PJ');
-//      document.querySelector('input[name="choixMultiLoc"]').setAttribute('value', 'true');
-//      document.querySelector('input[name="choixAmbiguite"]').setAttribute('value', 'false');
+//        document.querySelector('input[name="choixMultiLoc"]').setAttribute('value', 'true');
+//        document.querySelector('input[name="choixAmbiguite"]').setAttribute('value', 'false');
+
+
+
 
         document.querySelector('form[name="formClassiqueHaut"]').submit();
     }, quoi, department);
@@ -285,12 +293,32 @@ casper.label( "LOOP_DEPARTEMENT" );
     casper.label( "LOOP_START" );       
 
     casper.then(function() {
+        // console.log('[INFO] Location is ' + this.getCurrentUrl());
+    });
+
+    casper.then(function() {
         // console.log('[INFO] Click on links');
         this.click('.picTel');
+        //this.click('.textPagespro a');
     });
+
+    // casper.thenEvaluate(function() {
+    //     console.log('[INFO] Click on links');
+    //     document.querySelectorAll('.picTel').click();
+    //     document.querySelectorAll('.textPagespro a').click();
+    // });
     
     casper.then(function() {
+        // Click on 1st result link
+        // this.click('h3.r a');
+        //console.log('[INFO] Location is ' + this.getCurrentUrl());
         current_page_links = this.evaluate(getLinks);
+
+        current_page_pro_links = Array.prototype.filter.call(current_page_links, function(e){
+            return e.type == "page_pro";
+        });
+        // console.log(JSON.stringify(current_page_pro_links));
+        // this.echo("[INFO] Page pro links = " + current_page_pro_links.length);
     });
 
     casper.then(function() {
@@ -319,6 +347,35 @@ casper.label( "LOOP_DEPARTEMENT" );
         console.log(csv_lines.join("\n"));
     });
 
+
+    // casper.label( "LOOP_LINKS" );
+
+    // casper.then(function() {
+    //     if (current_page_pro_links.length != 0 && i_links < current_page_pro_links.length) {
+    //         this.echo("[INFO] Going to page pro : " + current_page_pro_links[i_links].page_pro_element_class);
+    //         this.evaluate(function() {
+    //             document.querySelector("." + current_page_pro_links[i_links].page_pro_element_class.replace(/ /g,".")).click();
+    //         });
+    //         var page_pro_infos = this.evaluate(getPagePro);
+    //         this.echo("Siret = " + page_pro_infos);
+    //         i_links = i_links + 1;
+    //     } else {
+    //         casper.goto( "LOOP_LINKS_END" );
+    //     }
+    // });
+
+    // casper.then(function() {
+    //     this.echo("[INFO] Location is " + this.getCurrentUrl());
+    //     var page_pro_infos = this.evaluate(getPagePro);
+    //     this.echo("Siret = " + page_pro_infos);
+    // });
+
+    // casper.then(function() {
+    //     casper.goto( "LOOP_LINKS" );
+    // });
+
+    // casper.label( "LOOP_LINKS_END" );
+
     casper.then(function() {
         i_links = 0;
 
@@ -345,3 +402,22 @@ casper.label( "LOOP_DEPARTEMENT" );
     casper.label( "END_LOOP_DEPARTEMENT" ); 
 
 casper.run();
+
+
+
+// function decode_base64(s) {
+//     var e={},i,k,v=[],r='',w=String.fromCharCode;
+//     var n=[[65,91],[97,123],[48,58],[43,44],[47,48]];
+
+//     for(z in n){for(i=n[z][0];i<n[z][1];i++){v.push(w(i));}}
+//     for(i=0;i<64;i++){e[v[i]]=i;}
+
+//     for(i=0;i<s.length;i+=72){
+//     var b=0,c,x,l=0,o=s.substring(i,i+72);
+//          for(x=0;x<o.length;x++){
+//                 c=e[o.charAt(x)];b=(b<<6)+c;l+=6;
+//                 while(l>=8){r+=w((b>>>(l-=8))%256);}
+//          }
+//     }
+//     return r;
+//     }
